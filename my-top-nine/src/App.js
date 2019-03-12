@@ -11,7 +11,7 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      itemList: {},
+      itemList: [],
       error: '',
       activeItem: null
     };
@@ -22,14 +22,10 @@ class App extends React.Component {
     .get('https://my-top-nine.herokuapp.com/api/categories')
     .then(res => {
       this.setState({ itemList: res.data });
-      console.log(this.state);
-    })
+    }, () => console.log(this.state))
     .catch(err => {
       this.setState({ error: err })
     })
-
-    console.log(this.state);
-
   }
 
   getItems() {
