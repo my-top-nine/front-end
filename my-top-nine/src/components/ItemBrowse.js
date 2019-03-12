@@ -9,7 +9,6 @@ import { IsLoggedIn } from './IsLoggedIn';
 class ItemBrowse extends Component {
 
   state = {
-    itemList: this.props.itemList,
     userId: null
   }
 
@@ -17,7 +16,9 @@ class ItemBrowse extends Component {
     return(
       <div>
         <IsLoggedIn userId={this.state.userId} />
-        <Item />
+        <Route path="/" render={() => 
+          this.props.itemList.map(item => <Item item={item} />)
+        } />
       </div>
     )
   }
