@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-
+import axios from 'axios';
 
 import './css/index.css';
 import Navigation from './components/Nav.js';
 import ItemBrowse from './components/ItemBrowse.js';
-import axios from 'axios';
+import Login from './components/Login.js';
 
 class App extends React.Component {
   constructor() {
@@ -47,10 +47,8 @@ class App extends React.Component {
             <Navigation />
           </nav>
         </header>
-        <section className="User">
-
-        </section>
         <section className="Item-browse">
+          <Login />
           <ItemBrowse />
         </section>
 

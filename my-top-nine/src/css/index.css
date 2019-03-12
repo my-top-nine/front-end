@@ -1,3 +1,6 @@
 .item-card {
   max-width: 200px;
 }
+.login-form {
+  padding: 0 2rem;
+}
