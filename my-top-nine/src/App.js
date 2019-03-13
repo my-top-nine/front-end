@@ -1,19 +1,17 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-
+import axios from 'axios';
 
 import './css/index.css';
 import Navigation from './components/Nav.js';
-import ItemBrowse from './components/ItemBrowse.js';
-import axios from 'axios';
+import ItemBrowse from './components/ItemBrowse';
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      itemList: {},
+      itemList: [],
       error: '',
-      activeItem: null
     };
   }
 
@@ -22,24 +20,9 @@ class App extends React.Component {
     .get('https://my-top-nine.herokuapp.com/api/categories')
     .then(res => {
       this.setState({ itemList: res.data });
-      console.log(this.state);
     })
     .catch(err => {
       this.setState({ error: err })
-    })
-
-    console.log(this.state);
-
-  }
-
-  getItems() {
-    this.state.itemList.map(id => {
-      return(
-      axios
-      .get(`https://my-top/nine.herokuapp.com/api/categories/${id}/items`)
-      .then(res => {console.log(res)})
-      .catch(err => console.log(err))
-      );
     })
   }
 
@@ -48,17 +31,17 @@ class App extends React.Component {
       <div className="App">
         <header className="App-header">
           <nav>
-            <Navigation />
+            <Route path="/" component={Navigation} />
           </nav>
         </header>
-        <section className="User">
-
-        </section>
         <section className="Item-browse">
-          <ItemBrowse />
+          <Route path="/" render={() => {
+            return(
+              <ItemBrowse 
+                itemList={this.state.itemList}
+              />)
+          }} />
         </section>
-
-        <Route path="/" />
       </div>
     );
   }
