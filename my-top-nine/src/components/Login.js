@@ -27,7 +27,7 @@ export class Login extends Component {
     axios
     .post('https://my-top-nine.herokuapp.com/api/tokens', this.state.credentials)
     .then(res => {
-        localStorage.setItem('token', res.data);
+        localStorage.setItem('userToken', res.data);
     })
     .catch(err => console.log(err));
     this.props.getUserId(1);
