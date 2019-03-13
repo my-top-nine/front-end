@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 
-export default class Login extends React.Component {
-
-  state = {
-    ...this.props
+export class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      credentials: {
+        username: '',
+        password: ''
+      }
+    }
   }
 
   handleChange = e => {
@@ -19,6 +24,19 @@ export default class Login extends React.Component {
 
   login = e => {
     e.preventDefault();
+    axios
+    .post('https://my-top-nine.herokuapp.com/api/tokens', this.state.credentials)
+    .then(res => {
+        localStorage.setItem('token', res.data);
+    })
+    .catch(err => console.log(err));
+    this.props.getUserId(1);
+    this.setState({
+      credentials: {
+        username: '',
+        password: ''
+      }
+    });
   }
 
   render() {
@@ -31,6 +49,8 @@ export default class Login extends React.Component {
             name="username" 
             id="username" 
             placeholder="Username" 
+            value={this.state.credentials.username}
+            onChange={this.handleChange}
           />
         </FormGroup>
         <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
@@ -40,6 +60,8 @@ export default class Login extends React.Component {
             name="password" 
             id="password" 
             placeholder="Password" 
+            value={this.state.credentials.password}
+            onChange={this.handleChange}
           />
         </FormGroup>
         <Button>Submit</Button>
