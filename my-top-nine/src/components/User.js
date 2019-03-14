@@ -6,13 +6,18 @@ const User = (props) => {
   return (
     <div>
       <Jumbotron>
-        <h1 className="display-3">Hello, world!</h1>
-        <p className="lead">This is a simple hero unit, a simple Jumbotron-style component for calling extra attention to featured content or information.</p>
+        <h1 className="display-3">Hello, {props.username}!</h1>
+        <p className="lead">This is a List of your Top Nine Things!</p>
         <hr className="my-2" />
-        <UserItem />
-        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <>
+          {props.userTopNine.map((topItem, index) => {
+            return(
+            <UserItem key={index} userItem={topItem} />
+          )})}
+        </>
+        <p>Happy Browsing!</p>
         <p className="lead">
-          <Button color="primary">Learn More</Button>
+          <Button color="primary">Sign Out</Button>
         </p>
       </Jumbotron>
     </div>

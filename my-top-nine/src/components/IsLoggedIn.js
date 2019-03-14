@@ -10,9 +10,11 @@ export const IsLoggedIn = (props) => {
       <Route 
       path="/" 
       render={() => (<User 
-        userId={props.userId} 
+        userId={props.userId}
+        userTopNine={props.userTopNine}
+        username={props.username}
         />)} 
-        />
+      />
     )
   } else {
     return(

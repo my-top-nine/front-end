@@ -21,7 +21,6 @@ class ItemBrowse extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log(prevState)
     if((this.state.user.id !== null) && this.state.user.id !== prevState.user.id) {
       this.getUserTopNine();
     }
@@ -51,7 +50,9 @@ class ItemBrowse extends Component {
       <div>
         <IsLoggedIn 
           userId={this.state.user.id} 
-          getUserId={this.getUserId} 
+          getUserId={this.getUserId}
+          userTopNine={this.state.userTopNine}
+          username={this.state.user.username}
         />
         <Route path="/" render={() => 
           this.props.itemList.map((item, index) => <Item item={item} key={index} />)
