@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Route, Link } from 'react-router-dom';
 import decode from 'jwt-decode';
 
-
 import Item from './Item.js';
+import AddNewItemForm from './AddNewItemForm';
 
 import { IsLoggedIn } from './IsLoggedIn';
 import axios from 'axios';
@@ -29,6 +29,7 @@ class ItemBrowse extends Component {
   getUserId = (username) => {
     const token = localStorage.getItem('userToken');
     const tokenInfo = decode(token);
+    console.log(tokenInfo)
     this.setState({ user: {
       ...this.state.user,
       username: username,
@@ -54,9 +55,12 @@ class ItemBrowse extends Component {
           userTopNine={this.state.userTopNine}
           username={this.state.user.username}
         />
-        <Route path="/" render={() => 
+        <Route path="/" render={() => {
+          return(
           this.props.itemList.map((item, index) => <Item item={item} key={index} />)
-        } />
+          )}} />
+        <Link to="/addNewItemForm">Something Missing?</Link>
+        <Route exact path="/addNewItemForm" component={AddNewItemForm} />
       </div>
     )
   }

@@ -3,7 +3,6 @@ import { Card, CardImg, CardText, CardBody,
   CardTitle, CardSubtitle, Button } from 'reactstrap';
 
 const Item = (props) => {
-  console.log(props);
   return (
     <div>
       <Card className="item-card">

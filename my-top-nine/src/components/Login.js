@@ -8,7 +8,8 @@ export class Login extends Component {
     this.state = {
       credentials: {
         username: '',
-        password: ''
+        password: '',
+        error: null
       }
     }
   }
@@ -22,6 +23,17 @@ export class Login extends Component {
     })
   }
 
+  // getUserId = () => {
+  //   const token = localStorage.getItem('userToken');
+  //   const tokenInfo = decode(token);
+  //   console.log(tokenInfo)
+  //   this.setState({ user: {
+  //     ...this.state.user,
+  //     username: username,
+  //     id: tokenInfo.id
+  //   }});
+  // }
+
   login = e => {
     e.preventDefault();
     axios
@@ -29,12 +41,18 @@ export class Login extends Component {
     .then(res => {
       localStorage.setItem('userToken', res.data.jwt);
     })
-    .catch(err => console.log(err));
+    .catch(err => this.setState({ credentials: {
+      ...this.state.credentials,
+      error: err
+    } }));
+    if(!this.state.credentials.error && (this.state.credentials !== '')) {
     this.props.getUserId(this.state.credentials.username);
+    }
     this.setState({
       credentials: {
         username: '',
-        password: ''
+        password: '',
+        error: ''
       }
     });
   }
@@ -64,7 +82,9 @@ export class Login extends Component {
             onChange={this.handleChange}
           />
         </FormGroup>
+        {this.state.error && <p>No user exists!</p> }
         <Button>Submit</Button>
+        {}
       </Form>
     );
   }
