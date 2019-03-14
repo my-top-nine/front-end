@@ -27,10 +27,10 @@ export class Login extends Component {
     axios
     .post('https://my-top-nine.herokuapp.com/api/tokens', this.state.credentials)
     .then(res => {
-        localStorage.setItem('userToken', res.data);
+      localStorage.setItem('userToken', res.data.jwt);
     })
     .catch(err => console.log(err));
-    this.props.getUserId(1);
+    this.props.getUserId(this.state.credentials.username);
     this.setState({
       credentials: {
         username: '',

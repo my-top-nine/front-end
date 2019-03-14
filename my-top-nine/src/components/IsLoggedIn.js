@@ -7,7 +7,12 @@ import User from './User.js';
 export const IsLoggedIn = (props) => {
   if(props.userId) {
     return(
-      <Route path="/" render={() => (<User userId={props.userId} getUserId={props.getUserId} />)} />
+      <Route 
+      path="/" 
+      render={() => (<User 
+        userId={props.userId} 
+        getUserTopNine={props.getUserTopNine} />)} 
+        />
     )
   } else {
     return(
