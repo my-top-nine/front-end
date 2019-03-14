@@ -6,7 +6,7 @@ const Item = (props) => {
   return (
     <div>
       <Card className="item-card">
-        <CardImg top width="100%" src={props.item.imageUrl} alt={props.item.name} />
+        {/* <CardImg top width="100%" src={props.item.imageUrl} alt={props.item.name} /> */}
         <CardBody>
           <CardTitle>{props.item.name}</CardTitle>
           <CardSubtitle></CardSubtitle>

@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { Route, Link } from 'react-router-dom';
 import decode from 'jwt-decode';
 
-import Item from './Item.js';
 import AddNewItemForm from './AddNewItemForm';
+import { Login } from './Login';
+import User from './User';
+import Item from './Item';
 
-import { IsLoggedIn } from './IsLoggedIn';
 import axios from 'axios';
 
 class ItemBrowse extends Component {
@@ -14,50 +15,75 @@ class ItemBrowse extends Component {
     this.state = {
       user: {
         username: '',
-        id: null
+        password: '',
+        isLoggedIn: false,
+        loginErr: false,
+        userId: null
+      },
+      newUser: {
+        username: '',
+        password: ''
       },
       userTopNine: []
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if((this.state.user.id !== null) && this.state.user.id !== prevState.user.id) {
-      this.getUserTopNine();
-    }
+  getLogin = (creds) => {
+    axios
+    .post('https://top9backend.herokuapp.com/api/login', creds)
+    .then(res => {
+      console.log(res);
+      this.setState({ user: {
+        ...this.state.user,
+        userId: res.data.id,
+        isLoggedIn: true
+      } })
+    })
+    .catch(err => {
+      console.log(err);
+      this.setState({ user: {...this.state.user, loginErr: true} })
+    });
   }
 
-  getUserId = (username) => {
-    const token = localStorage.getItem('userToken');
-    const tokenInfo = decode(token);
-    console.log(tokenInfo)
+  postNewUser = newCreds => {
+    axios
+    .post('https://top9backend.herokuapp.com/api/register', newCreds)
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
     this.setState({ user: {
       ...this.state.user,
-      username: username,
-      id: tokenInfo.id
-    }});
+      loginErr: false
+    } })
   }
 
-  getUserTopNine = () => {
-    axios
-    .get(`http://my-top-nine.herokuapp.com/api/users/${this.state.user.id}/favorites`)
-    .then(res => {
-      this.setState({ userTopNine: res.data });
-    })
-    .catch(err => console.log(err));
+  componentDidUpdate(prevProps, prevState) {
+    if(prevState.user.isLoggedIn !== this.state.user.isLoggedIn) {
+      this.setState({ user: {
+        ...this.state.user,
+        loginErr: false
+      } })
+    }
   }
 
   render() {
     return(
       <div>
-        <IsLoggedIn 
-          userId={this.state.user.id} 
-          getUserId={this.getUserId}
-          userTopNine={this.state.userTopNine}
-          username={this.state.user.username}
-        />
         <Route path="/" render={() => {
           return(
-          this.props.itemList.map((item, index) => <Item item={item} key={index} />)
+            <>
+            <Login 
+              isLoggedIn={this.state.user.isLoggedIn} 
+              loginErr={this.state.user.loginErr}
+              postNewUser={this.postNewUser} 
+              getLogin={this.getLogin} 
+            />
+            <User isLoggedIn={this.state.user.isLoggedIn} />
+            </>
+          )
+        }} />
+        <Route path="/" render={() => {
+          return(
+            this.props.itemList.map((item, index) => <Item item={item} key={index} />)
           )}} />
         <Link to="/addNewItemForm">Something Missing?</Link>
         <Route exact path="/addNewItemForm" component={AddNewItemForm} />

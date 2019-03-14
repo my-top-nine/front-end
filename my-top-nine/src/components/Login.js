@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 
 export class Login extends Component {
@@ -9,7 +8,6 @@ export class Login extends Component {
       credentials: {
         username: '',
         password: '',
-        error: null
       }
     }
   }
@@ -23,43 +21,40 @@ export class Login extends Component {
     })
   }
 
-  // getUserId = () => {
-  //   const token = localStorage.getItem('userToken');
-  //   const tokenInfo = decode(token);
-  //   console.log(tokenInfo)
-  //   this.setState({ user: {
-  //     ...this.state.user,
-  //     username: username,
-  //     id: tokenInfo.id
-  //   }});
-  // }
-
-  login = e => {
+  getLogin = e => {
     e.preventDefault();
-    axios
-    .post('https://my-top-nine.herokuapp.com/api/tokens', this.state.credentials)
-    .then(res => {
-      localStorage.setItem('userToken', res.data.jwt);
-    })
-    .catch(err => this.setState({ credentials: {
-      ...this.state.credentials,
-      error: err
-    } }));
-    if(!this.state.credentials.error && (this.state.credentials !== '')) {
-    this.props.getUserId(this.state.credentials.username);
-    }
-    this.setState({
-      credentials: {
-        username: '',
-        password: '',
-        error: ''
-      }
-    });
+    console.log("default prevent")
+    this.props.getLogin(this.state.credentials);
+  }
+
+  postNewUser = e => {
+    e.preventDefault();
+    console.log("default prevent")
+    this.props.postNewUser(this.state.credentials);
   }
 
   render() {
+
+    let button;
+
+    if(this.props.loginErr) {
+      button = <div><Button>Sign Up!</Button><p>New Users Must Sign Up</p></div>
+    } else {
+      button = <div><Button>Log In!</Button></div>
+    }
+
+    let whichForm;
+
+    if(this.props.loginErr) {
+      whichForm = this.postNewUser;
+    } else {
+      whichForm = this.getLogin;
+    };
+
     return (
-      <Form className="login-form" inline onSubmit={this.login}>
+      <div>
+        {(!this.props.isLoggedIn || this.props.loginErr) &&
+      <Form className="login-form" inline onSubmit={whichForm}>
         <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
           <Label for="username" className="mr-sm-2">Username</Label>
           <Input 
@@ -82,10 +77,10 @@ export class Login extends Component {
             onChange={this.handleChange}
           />
         </FormGroup>
-        {this.state.error && <p>No user exists!</p> }
-        <Button>Submit</Button>
-        {}
+        {button}
       </Form>
+        } {/* conditional prevents this from rendering if logged in */}
+      </div>
     );
   }
 }
