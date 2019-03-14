@@ -16,25 +16,34 @@ class ItemBrowse extends Component {
         username: '',
         id: null
       },
-      userTopNine: {}
+      userTopNine: []
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log(prevState)
+    if((this.state.user.id !== null) && this.state.user.id !== prevState.user.id) {
+      this.getUserTopNine();
     }
   }
 
   getUserId = (username) => {
     const token = localStorage.getItem('userToken');
     const tokenInfo = decode(token);
-    console.log(tokenInfo);
     this.setState({ user: {
-      ...this.state,
+      ...this.state.user,
       username: username,
       id: tokenInfo.id
     }});
   }
 
   getUserTopNine = () => {
+    console.log("getUserTopNine just got run")
     axios
-    .get(`http://my-top-nine.herokuapp.com/api/${this.state.user.id}/favorites`)
-    .then(res => console.log(res))
+    .get(`http://my-top-nine.herokuapp.com/api/users/${this.state.user.id}/favorites`)
+    .then(res => {
+      this.setState({ userTopNine: res.data });
+    })
     .catch(err => console.log(err));
   }
 
@@ -44,7 +53,6 @@ class ItemBrowse extends Component {
         <IsLoggedIn 
           userId={this.state.user.id} 
           getUserId={this.getUserId} 
-          getUserTopNine={this.getUserTopNine}
         />
         <Route path="/" render={() => 
           this.props.itemList.map((item, index) => <Item item={item} key={index} />)

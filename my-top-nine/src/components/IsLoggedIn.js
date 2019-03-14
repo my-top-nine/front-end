@@ -11,7 +11,7 @@ export const IsLoggedIn = (props) => {
       path="/" 
       render={() => (<User 
         userId={props.userId} 
-        getUserTopNine={props.getUserTopNine} />)} 
+        />)} 
         />
     )
   } else {
