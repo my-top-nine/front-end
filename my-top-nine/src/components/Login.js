@@ -23,13 +23,11 @@ export class Login extends Component {
 
   getLogin = e => {
     e.preventDefault();
-    console.log("default prevent")
     this.props.getLogin(this.state.credentials);
   }
 
   postNewUser = e => {
     e.preventDefault();
-    console.log("default prevent")
     this.props.postNewUser(this.state.credentials);
   }
 

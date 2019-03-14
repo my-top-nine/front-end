@@ -32,11 +32,13 @@ class ItemBrowse extends Component {
     axios
     .post('https://top9backend.herokuapp.com/api/login', creds)
     .then(res => {
-      console.log(res);
+      localStorage.setItem('userToken', res.data.token);
+      const user = decode(localStorage.getItem('userToken'));
       this.setState({ user: {
         ...this.state.user,
-        userId: res.data.id,
-        isLoggedIn: true
+        isLoggedIn: true,
+        userId: user.id,
+        username: user.username
       } })
     })
     .catch(err => {
@@ -54,6 +56,17 @@ class ItemBrowse extends Component {
       ...this.state.user,
       loginErr: false
     } })
+  }
+
+  getUser = () => {
+    axios.create({
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('userToken')
+      }
+    }).get(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}`)
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -77,7 +90,11 @@ class ItemBrowse extends Component {
               postNewUser={this.postNewUser} 
               getLogin={this.getLogin} 
             />
-            <User isLoggedIn={this.state.user.isLoggedIn} />
+            <User 
+            isLoggedIn={this.state.user.isLoggedIn}
+            getUser={this.getUser} 
+            username={this.state.user.username}
+            />
             </>
           )
         }} />
