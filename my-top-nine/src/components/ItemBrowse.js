@@ -38,7 +38,6 @@ class ItemBrowse extends Component {
   }
 
   getUserTopNine = () => {
-    console.log("getUserTopNine just got run")
     axios
     .get(`http://my-top-nine.herokuapp.com/api/users/${this.state.user.id}/favorites`)
     .then(res => {
