@@ -17,7 +17,7 @@ class App extends React.Component {
 
   componentDidMount() {
     axios
-    .get('https://my-top-nine.herokuapp.com/api/categories')
+    .get('https://top9backend.herokuapp.com/api/guest')
     .then(res => {
       this.setState({ itemList: res.data });
     })
