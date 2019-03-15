@@ -24,10 +24,17 @@ const User = (props) => {
         <p>Happy Browsing!</p>
         <hr className="my-2" />
         <p className="lead">
-          <Button color="primary">Sign Out</Button>
+          {/* <Button color="primary">Sign Out</Button> */}
         </p>
         <NavLink to="/addNewItemForm">Something Missing?</NavLink>
-        <Route exact path="/addNewItemForm" component={AddNewItemForm} />
+        <Route path="/addNewItemForm" render={(properties) => {
+          return(
+            <AddNewItemForm 
+            postAddNewItem={props.postAddNewItem}
+            {...properties}
+            />
+          )
+        }} />
       </Jumbotron>
       }
     </div>

@@ -25,6 +25,8 @@ class ItemBrowse extends Component {
         username: '',
         password: ''
       },
+      addingItem: true,
+      updatedItemList: []
     }
   }
 
@@ -65,7 +67,6 @@ class ItemBrowse extends Component {
   }
 
   getUserTopNine = () => {
-    console.log("We ran getUserTopNine")
     axios.create({ 
       headers: {
         'Content-Type': 'application/json',
@@ -134,6 +135,43 @@ class ItemBrowse extends Component {
     }
   }
 
+  postAddNewItem = (e, newItem, history) => {
+    console.log(newItem)
+    history.replace('/');
+    axios.create({ 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('userToken')
+      }
+    }).post(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/add`, newItem)
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
+    this.getNewList();
+  }
+
+  getNewList = () => {
+    axios
+    .get('https://top9backend.herokuapp.com/api/guest')
+    .then(res => {
+      this.setState({ itemList: res.data });
+    })
+    .catch(err => {
+      this.setState({ error: err })
+    })
+
+    axios.create({ 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('userToken')
+      }
+    }).get(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/all`)
+    .then(res => {
+      console.log(res.data)
+      this.setState({ updatedItemList: res.data })
+    })
+    .catch(err => console.log(err));
+  }
+
   render() {
     return(
       <div>
@@ -151,6 +189,7 @@ class ItemBrowse extends Component {
             getUser={this.getUser} 
             getUserTopNine={this.getUserTopNine}
             deleteFromTopNine={this.deleteFromTopNine}
+            postAddNewItem={this.postAddNewItem}
             userId={this.state.user.userId}
             username={this.state.user.username}
             userTopNine={this.state.user.userTopNine}
