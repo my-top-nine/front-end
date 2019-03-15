@@ -9,7 +9,7 @@ const Item = (props) => {
         {/* <CardImg top width="100%" src={props.item.imageUrl} alt={props.item.name} /> */}
         <CardBody>
           <CardTitle>{props.item.name}</CardTitle>
-          <CardSubtitle></CardSubtitle>
+          <CardSubtitle>{props.item.category}</CardSubtitle>
           <CardText></CardText>
           <Button>Button</Button>
         </CardBody>

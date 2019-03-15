@@ -18,13 +18,13 @@ class ItemBrowse extends Component {
         password: '',
         isLoggedIn: false,
         loginErr: false,
-        userId: null
+        userId: null,
+        userTopNine: []
       },
       newUser: {
         username: '',
         password: ''
       },
-      userTopNine: []
     }
   }
 
@@ -33,13 +33,10 @@ class ItemBrowse extends Component {
     .post('https://top9backend.herokuapp.com/api/login', creds)
     .then(res => {
       localStorage.setItem('userToken', res.data.token);
-      const user = decode(localStorage.getItem('userToken'));
       this.setState({ user: {
         ...this.state.user,
-        isLoggedIn: true,
-        userId: user.id,
-        username: user.username
-      } })
+        isLoggedIn: true
+      }})
     })
     .catch(err => {
       console.log(err);
@@ -59,14 +56,29 @@ class ItemBrowse extends Component {
   }
 
   getUser = () => {
-    axios.create({
+    const user = decode(localStorage.getItem('userToken'));
+    this.setState({ user: {
+      ...this.state.user,
+      userId: user.id,
+      username: user.username
+      } })
+  }
+
+  getUserTopNine = () => {
+    console.log("We ran getUserTopNine")
+    axios.create({ 
       headers: {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem('userToken')
       }
-    }).get(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}`)
-    .then(res => console.log(res))
-    .catch(err => console.log(err));
+     }).get(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/topnine`)
+     .then(res => {
+       this.setState({ user: {
+         ...this.state.user,
+         userTopNine: res.data
+       }})
+     })
+     .catch(err => console.log(err));
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -75,6 +87,10 @@ class ItemBrowse extends Component {
         ...this.state.user,
         loginErr: false
       } })
+    }
+
+    if(prevState.user.userId !== this.state.user.userId) {
+      this.getUserTopNine();
     }
   }
 
@@ -93,7 +109,10 @@ class ItemBrowse extends Component {
             <User 
             isLoggedIn={this.state.user.isLoggedIn}
             getUser={this.getUser} 
+            getUserTopNine={this.getUserTopNine}
+            userId={this.state.user.userId}
             username={this.state.user.username}
+            userTopNine={this.state.user.userTopNine}
             />
             </>
           )
