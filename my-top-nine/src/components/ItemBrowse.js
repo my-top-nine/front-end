@@ -81,6 +81,24 @@ class ItemBrowse extends Component {
      .catch(err => console.log(err));
   }
 
+  addToTopNine = (e, position, item) => {
+    e.preventDefault();
+    const newTopItem = {
+      id: item.id,
+      category: item.category,
+      position: position
+    }
+
+    axios.create({ 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('userToken')
+      }
+    }).post(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/topnine`, newTopItem)
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if(prevState.user.isLoggedIn !== this.state.user.isLoggedIn) {
       this.setState({ user: {
@@ -121,6 +139,7 @@ class ItemBrowse extends Component {
           return(
             this.props.itemList.map((item, index) => <Item item={item} key={index}
               isLoggedIn={this.state.user.isLoggedIn}
+              addToTopNine={this.addToTopNine}
             />)
           )}} />
         <Link to="/addNewItemForm">Something Missing?</Link>
