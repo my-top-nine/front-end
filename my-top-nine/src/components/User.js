@@ -1,14 +1,16 @@
 import React from 'react';
 import { Jumbotron, Button } from 'reactstrap';
 import UserItem from './UserItem.js';
+import { Route, NavLink } from 'react-router-dom';
+
+import AddNewItemForm from './AddNewItemForm';
 
 const User = (props) => {
 
-  console.log(props)
   if(!props.userId) {
     props.getUser();
   }
-
+  
   return (
     <div>
       {props.isLoggedIn &&
@@ -17,13 +19,15 @@ const User = (props) => {
         <p className="lead">This is a List of your Top Nine Things!</p>
         {props.userTopNine.map((userItem, index) => {
           return(
-          <UserItem key={index} userItem={userItem} />
+          <UserItem key={index} userItem={userItem} deleteFromTopNine={props.deleteFromTopNine} />
         )})}
-        <hr className="my-2" />
         <p>Happy Browsing!</p>
+        <hr className="my-2" />
         <p className="lead">
           <Button color="primary">Sign Out</Button>
         </p>
+        <NavLink to="/addNewItemForm">Something Missing?</NavLink>
+        <Route exact path="/addNewItemForm" component={AddNewItemForm} />
       </Jumbotron>
       }
     </div>

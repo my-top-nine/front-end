@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import decode from 'jwt-decode';
 
-import AddNewItemForm from './AddNewItemForm';
 import { Login } from './Login';
 import User from './User';
 import Item from './Item';
@@ -19,7 +18,8 @@ class ItemBrowse extends Component {
         isLoggedIn: false,
         loginErr: false,
         userId: null,
-        userTopNine: []
+        userTopNine: [],
+        deleted: false
       },
       newUser: {
         username: '',
@@ -99,16 +99,38 @@ class ItemBrowse extends Component {
     .catch(err => console.log(err));
   }
 
+  deleteFromTopNine = (e, item) => {
+    e.preventDefault();
+    axios.create({ 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('userToken')
+      }
+    }).delete(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/topnine/${item.Id}`)
+    .then(res => {
+      console.log(res);
+      this.setState({ user: {
+        ...this.state.user,
+        deleted: true
+      } })
+    })
+    .catch(err => console.log(err));
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if(prevState.user.isLoggedIn !== this.state.user.isLoggedIn) {
       this.setState({ user: {
         ...this.state.user,
         loginErr: false
-      } })
+      } });
     }
 
-    if(prevState.user.userId !== this.state.user.userId) {
+    if((prevState.user.userId !== this.state.user.userId) || this.state.user.deleted) {
       this.getUserTopNine();
+      this.setState({ user: {
+        ...this.state.user,
+        deleted: false
+      } });
     }
   }
 
@@ -128,6 +150,7 @@ class ItemBrowse extends Component {
             isLoggedIn={this.state.user.isLoggedIn}
             getUser={this.getUser} 
             getUserTopNine={this.getUserTopNine}
+            deleteFromTopNine={this.deleteFromTopNine}
             userId={this.state.user.userId}
             username={this.state.user.username}
             userTopNine={this.state.user.userTopNine}
@@ -142,8 +165,6 @@ class ItemBrowse extends Component {
               addToTopNine={this.addToTopNine}
             />)
           )}} />
-        <Link to="/addNewItemForm">Something Missing?</Link>
-        <Route exact path="/addNewItemForm" component={AddNewItemForm} />
       </div>
     )
   }
