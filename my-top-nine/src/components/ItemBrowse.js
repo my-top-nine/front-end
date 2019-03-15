@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import decode from 'jwt-decode';
 
-import AddNewItemForm from './AddNewItemForm';
 import { Login } from './Login';
 import User from './User';
 import Item from './Item';
@@ -18,13 +17,16 @@ class ItemBrowse extends Component {
         password: '',
         isLoggedIn: false,
         loginErr: false,
-        userId: null
+        userId: null,
+        userTopNine: [],
+        deleted: false
       },
       newUser: {
         username: '',
         password: ''
       },
-      userTopNine: []
+      addingItem: true,
+      updatedItemList: []
     }
   }
 
@@ -33,13 +35,10 @@ class ItemBrowse extends Component {
     .post('https://top9backend.herokuapp.com/api/login', creds)
     .then(res => {
       localStorage.setItem('userToken', res.data.token);
-      const user = decode(localStorage.getItem('userToken'));
       this.setState({ user: {
         ...this.state.user,
-        isLoggedIn: true,
-        userId: user.id,
-        username: user.username
-      } })
+        isLoggedIn: true
+      }})
     })
     .catch(err => {
       console.log(err);
@@ -59,13 +58,63 @@ class ItemBrowse extends Component {
   }
 
   getUser = () => {
-    axios.create({
+    const user = decode(localStorage.getItem('userToken'));
+    this.setState({ user: {
+      ...this.state.user,
+      userId: user.id,
+      username: user.username
+      } })
+  }
+
+  getUserTopNine = () => {
+    axios.create({ 
       headers: {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem('userToken')
       }
-    }).get(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}`)
+     }).get(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/topnine`)
+     .then(res => {
+       this.setState({ user: {
+         ...this.state.user,
+         userTopNine: res.data
+       }})
+     })
+     .catch(err => console.log(err));
+  }
+
+  addToTopNine = (e, position, item) => {
+    e.preventDefault();
+    const newTopItem = {
+      id: item.id,
+      category: item.category,
+      position: position
+    }
+
+    axios.create({ 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('userToken')
+      }
+    }).post(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/topnine`, newTopItem)
     .then(res => console.log(res))
+    .catch(err => console.log(err));
+  }
+
+  deleteFromTopNine = (e, item) => {
+    e.preventDefault();
+    axios.create({ 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('userToken')
+      }
+    }).delete(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/topnine/${item.Id}`)
+    .then(res => {
+      console.log(res);
+      this.setState({ user: {
+        ...this.state.user,
+        deleted: true
+      } })
+    })
     .catch(err => console.log(err));
   }
 
@@ -74,8 +123,53 @@ class ItemBrowse extends Component {
       this.setState({ user: {
         ...this.state.user,
         loginErr: false
-      } })
+      } });
     }
+
+    if((prevState.user.userId !== this.state.user.userId) || this.state.user.deleted) {
+      this.getUserTopNine();
+      this.setState({ user: {
+        ...this.state.user,
+        deleted: false
+      } });
+    }
+  }
+
+  postAddNewItem = (e, newItem, history) => {
+    console.log(newItem)
+    history.replace('/');
+    axios.create({ 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('userToken')
+      }
+    }).post(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/add`, newItem)
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
+    this.getNewList();
+  }
+
+  getNewList = () => {
+    axios
+    .get('https://top9backend.herokuapp.com/api/guest')
+    .then(res => {
+      this.setState({ itemList: res.data });
+    })
+    .catch(err => {
+      this.setState({ error: err })
+    })
+
+    axios.create({ 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('userToken')
+      }
+    }).get(`https://top9backend.herokuapp.com/api/users/${this.state.user.userId}/all`)
+    .then(res => {
+      console.log(res.data)
+      this.setState({ updatedItemList: res.data })
+    })
+    .catch(err => console.log(err));
   }
 
   render() {
@@ -93,17 +187,23 @@ class ItemBrowse extends Component {
             <User 
             isLoggedIn={this.state.user.isLoggedIn}
             getUser={this.getUser} 
+            getUserTopNine={this.getUserTopNine}
+            deleteFromTopNine={this.deleteFromTopNine}
+            postAddNewItem={this.postAddNewItem}
+            userId={this.state.user.userId}
             username={this.state.user.username}
+            userTopNine={this.state.user.userTopNine}
             />
             </>
           )
         }} />
         <Route path="/" render={() => {
           return(
-            this.props.itemList.map((item, index) => <Item item={item} key={index} />)
+            this.props.itemList.map((item, index) => <Item item={item} key={index}
+              isLoggedIn={this.state.user.isLoggedIn}
+              addToTopNine={this.addToTopNine}
+            />)
           )}} />
-        <Link to="/addNewItemForm">Something Missing?</Link>
-        <Route exact path="/addNewItemForm" component={AddNewItemForm} />
       </div>
     )
   }

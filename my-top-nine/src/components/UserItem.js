@@ -8,10 +8,10 @@ const UserItem = (props) => {
       <Card className="item-card">
         {/* <CardImg top width="100%" src={props.userItem.imageUrl} alt={props.userItem.name} /> */}
         <CardBody>
-          <CardTitle>{props.userItem.name}</CardTitle>
-          <CardSubtitle></CardSubtitle>
+          <CardTitle>{props.userItem.item}</CardTitle>
+          <CardSubtitle><strong>Category: </strong>{props.userItem.category}</CardSubtitle>
           <CardText></CardText>
-          <Button>Button</Button>
+          <Button onClick={e => props.deleteFromTopNine(e, props.userItem)}>Remove</Button>
         </CardBody>
       </Card>
     </div>
