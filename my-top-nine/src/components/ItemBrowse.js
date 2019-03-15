@@ -119,7 +119,9 @@ class ItemBrowse extends Component {
         }} />
         <Route path="/" render={() => {
           return(
-            this.props.itemList.map((item, index) => <Item item={item} key={index} />)
+            this.props.itemList.map((item, index) => <Item item={item} key={index}
+              isLoggedIn={this.state.user.isLoggedIn}
+            />)
           )}} />
         <Link to="/addNewItemForm">Something Missing?</Link>
         <Route exact path="/addNewItemForm" component={AddNewItemForm} />
